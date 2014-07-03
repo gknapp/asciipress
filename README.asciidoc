@@ -1,0 +1,15 @@
+== AsciiPress
+
+A static blog publish system using:
+
+* Asciidoc content files
+* Docbook and XSLT stylesheet transforms to HTML
+
+.Dependencies
+
+[source,bash]
+$ sudo apt-get install asciidoc xsltproc
+
+.Generate
+[source,bash]
+$ ./publish
