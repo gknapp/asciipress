@@ -33,7 +33,7 @@
     <xsl:text disable-output-escaping="yes">&lt;!--[if lt IE 8]></xsl:text>
     <p>You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com">upgrade your browser</a> to improve your experience.</p>
     <xsl:text disable-output-escaping="yes">&lt;![endif]--></xsl:text>
-    <h1>(grok "it")</h1>
+    <h1>(serial "failure")</h1>
     </header>
     <section id="content">
       <article>
