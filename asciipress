@@ -4,38 +4,20 @@ import argparse
 from os import path, listdir, chdir, errno
 from subprocess import call
 
-class Console:
-    """Print messages sent to console"""
-    def echo(self, message):
-        print message
-
-class SilentConsole:
-    """Suppress messages sent to console"""
-    def echo(self, message):
-        return True
-
-def configure_args():
-    parser = argparse.ArgumentParser(description='Convert Asciidoc files to HTML files.')
-    parser.add_argument("ASCIIDOC_DIR",
-                        help="File path to Asciidoc files to be converted")
-    parser.add_argument("OUTPUT_DIR",
-                        help="Destination path to output converted HTML files")
-    parser.add_argument("-q", "--quiet",
-                        action="store_true", help="Suppress output messages")
-    return parser.parse_args()
-
 def cmd_not_found(e):
     return e.errno == errno.ENOENT
 
 def asc_to_xml(asc_file, xml_file):
     """Convert an Asciidoc file to a Docbook XML file"""
-    cmd = "asciidoc --backend=docbook -a disable-javascript"
+    cmd = "/usr/bin/asciidoc --backend=docbook -a disable-javascript"
 
     try:
+        print "%s -o %s %s" % (cmd, xml_file, asc_file)
         call("%s -o %s %s" % (cmd, xml_file, asc_file))
         return True
     except OSError as e:
         if cmd_not_found(e):
+            print e.strerror
             console.echo("Conversion failed: asciidoc not installed")
         else:
             console.echo("Error occurred converting Asciidoc to XML")
@@ -44,10 +26,10 @@ def asc_to_xml(asc_file, xml_file):
 
 def xml_to_html(script_path, xml_file, html_file):
     """Convert a Docbook XML file to HTML via an XSL template"""
-    xslt_file = path.join(script_path,"index.xsl")
+    xslt_file = path.join(script_path, "index.xsl")
 
     try:
-        call("xsltproc %s %s > %s" % (xslt_file, xml_file, html_file))
+        call("/usr/bin/xsltproc %s %s > %s" % (xslt_file, xml_file, html_file))
     except OSError as e:
         if cmd_not_found(e):
             console.echo("Conversion failed: xsltproc not installed")
@@ -76,6 +58,28 @@ def main(console, content_path, output_path):
         if asc_to_xml(asc_file, xml_file):
             xml_to_html(script_path, xml_file, html_file)
             console.echo("Converted %s -> %s.html" % (fname, name))
+
+def configure_args():
+    parser = argparse.ArgumentParser(
+        description='Convert Asciidoc files to HTML files.'
+    )
+    parser.add_argument("ASCIIDOC_DIR",
+                        help="File path to Asciidoc files to be converted")
+    parser.add_argument("OUTPUT_DIR",
+                        help="Destination path to output converted HTML files")
+    parser.add_argument("-q", "--quiet",
+                        action="store_true", help="Suppress output messages")
+    return parser.parse_args()
+
+class Console:
+    """Print messages sent to console"""
+    def echo(self, message):
+        print message
+
+class SilentConsole:
+    """Suppress messages sent to console"""
+    def echo(self, message):
+        return True
 
 if __name__ == '__main__':
     args = configure_args()
