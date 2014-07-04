@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+
+import argparse
+from os import path, listdir, chdir, errno
+from subprocess import call
+
+class Console:
+    """Print messages sent to console"""
+    def echo(self, message):
+        print message
+
+class SilentConsole:
+    """Suppress messages sent to console"""
+    def echo(self, message):
+        return True
+
+def configure_args():
+    parser = argparse.ArgumentParser(description='Convert Asciidoc files to HTML files.')
+    parser.add_argument("ASCIIDOC_DIR",
+                        help="File path to Asciidoc files to be converted")
+    parser.add_argument("OUTPUT_DIR",
+                        help="Destination path to output converted HTML files")
+    parser.add_argument("-q", "--quiet",
+                        action="store_true", help="Suppress output messages")
+    return parser.parse_args()
+
+def cmd_not_found(e):
+    return e.errno == errno.ENOENT
+
+def asc_to_xml(asc_file, xml_file):
+    """Convert an Asciidoc file to a Docbook XML file"""
+    cmd = "asciidoc --backend=docbook -a disable-javascript"
+
+    try:
+        call("%s -o %s %s" % (cmd, xml_file, asc_file))
+        return True
+    except OSError as e:
+        if cmd_not_found(e):
+            console.echo("Conversion failed: asciidoc not installed")
+        else:
+            console.echo("Error occurred converting Asciidoc to XML")
+
+    return False
+
+def xml_to_html(script_path, xml_file, html_file):
+    """Convert a Docbook XML file to HTML via an XSL template"""
+    xslt_file = path.join(script_path,"index.xsl")
+
+    try:
+        call("xsltproc %s %s > %s" % (xslt_file, xml_file, html_file))
+    except OSError as e:
+        if cmd_not_found(e):
+            console.echo("Conversion failed: xsltproc not installed")
+        else:
+            console.echo("Error occurred converting XML to HTML")
+
+def main(console, content_path, output_path):
+    script_path = path.dirname(path.realpath(__file__))
+    source_path = path.realpath(path.join(script_path, content_path))
+    html_path   = path.realpath(path.join(script_path, output_path))
+
+    console.echo("Reading articles from: " + source_path)
+    console.echo("Outputting HTML to: " + html_path)
+    chdir(script_path)
+
+    asciidocs = listdir(source_path)
+    xml_path  = path.join(script_path, "xml")
+
+    for fname in asciidocs:
+        name, ext = path.splitext(fname)
+
+        asc_file  = path.join(source_path, fname)
+        xml_file  = path.join(xml_path, name + ".xml")
+        html_file = path.join(html_path, name + ".html")
+
+        if asc_to_xml(asc_file, xml_file):
+            xml_to_html(script_path, xml_file, html_file)
+            console.echo("Converted %s -> %s.html" % (fname, name))
+
+if __name__ == '__main__':
+    args = configure_args()
+    console = SilentConsole() if args.quiet else Console()
+    main(console, args.ASCIIDOC_DIR, args.OUTPUT_DIR)
