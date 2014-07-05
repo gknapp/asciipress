@@ -18,22 +18,18 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>(serial "failure")</title>
+    <title>(serial failure)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" type="text/css" href="css/reset.css" />
-    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:500italic,400,500,400italic" />
-  <style type="text/css">
-    body {
-      font-family: 'Roboto', sans-serif;
-    }
-  </style>
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Inconsolata:700|Roboto:400,700,400italic,700italic" />
   </head>
   <body>
     <header>
     <xsl:text disable-output-escaping="yes">&lt;!--[if lt IE 8]></xsl:text>
     <p>You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com">upgrade your browser</a> to improve your experience.</p>
     <xsl:text disable-output-escaping="yes">&lt;![endif]--></xsl:text>
-    <h1>(serial "failure")</h1>
+    <h1>(serial failure)</h1>
     </header>
     <section id="content">
       <article>
