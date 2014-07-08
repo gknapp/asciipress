@@ -1,49 +1,57 @@
 #!/usr/bin/env python
 
-import argparse
-from os import path, listdir, chdir, errno
-from subprocess import check_call
+try:
+    import argparse
+    from os import path, listdir, chdir, errno
+    from subprocess import check_call
+except Exception:
+    print "Failed to import necessary libraries, Python 2.7+ required"
+    exit(1)
 
 def cmd_not_found(e):
     return e.errno == errno.ENOENT
 
-def asc_to_xml(asc_file, xml_file):
-    """Convert an Asciidoc file to a Docbook XML file"""
+def run_cmd(cmd, descript):
     try:
-        args = ["asciidoc", "--backend=docbook", "-a disable-javascript",
-                "-o", xml_file, asc_file]
-        check_call(args)
+        check_call(cmd)
         return True
     except OSError as e:
         if cmd_not_found(e):
-            console.echo("Conversion failed: asciidoc not installed")
+            console.echo("Conversion failed: %s not install" % cmd[0])
     except:
-        console.echo("Error occurred converting Asciidoc to XML")
+        console.echo("Error occurred converting " + descript)
     return False
 
-def xml_to_html(script_path, xml_file, html_file):
+def asc_to_xml(asc_file, xml_file):
+    """Convert an Asciidoc file to a Docbook XML file"""
+    args = ["asciidoc", "--backend=docbook", "-a disable-javascript",
+            "-o", xml_file, asc_file]
+    return run_cmd(args, "Asciidoc to XML")
+
+def xml_to_html(script_path, xml_file, xsl, html_file):
     """Convert a Docbook XML file to HTML via an XSL template"""
-    xslt_file = path.join(script_path, "index.xsl")
+    # loop over xsl and produce index, article
+    xslt_file = path.join(script_path, xsl["index"])
+    args = ["xsltproc", "-o", html_file, xslt_file, xml_file]
+    return run_cmd(args, "XML to HTML")
 
-    try:
-        args = ["xsltproc", "-o", html_file, xslt_file, xml_file]
-        check_call(args)
-    except OSError as e:
-        if cmd_not_found(e):
-            console.echo("Conversion failed: xsltproc not installed")
-    except:
-        console.echo("Error occurred converting XML to HTML")
+def only_asciidoc(fname):
+    name, ext = path.splitext(fname)
+    return ext == '.asc'
 
-def main(console, content_path, output_path):
+def list_asciidocs(path):
+    return filter(only_asciidoc, listdir(path))
+
+def main(console, config):
     script_path = path.dirname(path.realpath(__file__))
-    source_path = path.realpath(path.join(script_path, content_path))
-    html_path   = path.realpath(path.join(script_path, output_path))
+    source_path = path.realpath(path.join(script_path, config["ASCIIDOC_DIR"]))
+    html_path   = path.realpath(path.join(script_path, config["OUTPUT_DIR"]))
 
-    console.echo("Reading articles: " + source_path)
-    console.echo("Output HTML: " + html_path)
+    console.echo("Asciidoc files: " + source_path)
+    console.echo("HTML output:    " + html_path)
     chdir(script_path)
 
-    asciidocs = listdir(source_path)
+    asciidocs = list_asciidocs(source_path)
     xml_path  = path.join(script_path, "xml")
 
     # only process asciidocs newer than existing html file
@@ -55,17 +63,17 @@ def main(console, content_path, output_path):
         html_file = path.join(html_path, name + ".html")
 
         if asc_to_xml(asc_file, xml_file):
-            xml_to_html(script_path, xml_file, html_file)
+            xml_to_html(script_path, xml_file, config["xsl"], html_file)
             console.echo("Converted %s -> %s.html" % (fname, name))
 
 def configure_args():
     parser = argparse.ArgumentParser(
-        description='Convert Asciidoc files to HTML files.'
+        description='Convert Asciidoc files to HTML via XSL templates'
     )
     parser.add_argument("ASCIIDOC_DIR",
                         help="File path to Asciidoc files to be converted")
     parser.add_argument("OUTPUT_DIR",
-                        help="Destination path to output converted HTML files")
+                        help="Destination path to output HTML files")
     parser.add_argument("-q", "--quiet",
                         action="store_true", help="Suppress output messages")
     return parser.parse_args()
@@ -80,7 +88,19 @@ class SilentConsole:
     def echo(self, message):
         return True
 
+def load_config(args):
+    """Attempt to load config, otherwise return defaults"""
+    defaults = {
+        "xsl": {
+            "index": "index.xsl",
+            "article": "article.xsl",
+            "rss": "index_rss.xsl"
+        }
+    }
+    return dict(defaults.items() + args.__dict__.items())
+
 if __name__ == '__main__':
     args = configure_args()
     console = SilentConsole() if args.quiet else Console()
-    main(console, args.ASCIIDOC_DIR, args.OUTPUT_DIR)
+    config = load_config(args)
+    main(console, config)
