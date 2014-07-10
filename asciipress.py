@@ -2,24 +2,18 @@
 
 try:
     import argparse
-    from os import path, listdir, chdir, errno
-    from subprocess import check_call
+    from asciipress import command
+    from os import path, listdir, chdir, errno, mkdir
 except Exception:
     print "Failed to import necessary libraries, Python 2.7+ required"
     exit(1)
 
-def cmd_not_found(e):
-    return e.errno == errno.ENOENT
-
 def run_cmd(cmd, descript):
     try:
-        check_call(cmd)
+        command.run(cmd)
         return True
-    except OSError as e:
-        if cmd_not_found(e):
-            console.echo("Conversion failed: %s not install" % cmd[0])
-    except:
-        console.echo("Error occurred converting " + descript)
+    except Exception as e:
+        console.echo("Error occurred converting %s: %s" % (desc, e.strerror))
     return False
 
 def asc_to_xml(asc_file, xml_file):
@@ -46,13 +40,20 @@ def main(console, config):
     script_path = path.dirname(path.realpath(__file__))
     source_path = path.realpath(path.join(script_path, config["ASCIIDOC_DIR"]))
     html_path   = path.realpath(path.join(script_path, config["OUTPUT_DIR"]))
+    xml_path    = path.join(script_path, "xml")
+
+    if not path.isdir(xml_path):
+        try:
+            mkdir(xml_path, 0775)
+        except OSError as e:
+            console.echo("Cannot create working directory: " + xml_path)
+            exit(1)
 
     console.echo("Asciidoc files: " + source_path)
     console.echo("HTML output:    " + html_path)
     chdir(script_path)
 
     asciidocs = list_asciidocs(source_path)
-    xml_path  = path.join(script_path, "xml")
 
     # only process asciidocs newer than existing html file
     for fname in asciidocs:
@@ -63,8 +64,8 @@ def main(console, config):
         html_file = path.join(html_path, name + ".html")
 
         if asc_to_xml(asc_file, xml_file):
-            xml_to_html(script_path, xml_file, config["xsl"], html_file)
-            console.echo("Converted %s -> %s.html" % (fname, name))
+            if xml_to_html(script_path, xml_file, config["xsl"], html_file):
+                console.echo("Converted %s -> %s.html" % (fname, name))
 
 def configure_args():
     parser = argparse.ArgumentParser(
