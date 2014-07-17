@@ -22,7 +22,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" type="text/css" href="css/reset.css" />
     <link rel="stylesheet" type="text/css" href="css/main.css" />
-    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Inconsolata:700|Roboto:400,700,400italic,700italic" />
   </head>
   <body>
     <header>
@@ -38,6 +37,20 @@
       </article>
     </section>
     <footer>Opinions expressed here are my own and not those of my employer.</footer>
+    <script type="text/javascript">
+      WebFontConfig = {
+        google: { families: [ 'Love+Ya+Like+A+Sister::latin', 'Roboto:400,700italic,400italic,700:latin' ] }
+      };
+      (function() {
+        var wf = document.createElement('script');
+        wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+          '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+        wf.type = 'text/javascript';
+        wf.async = 'true';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(wf, s);
+      })();
+    </script>
   </body>
 </html>
 </xsl:template>
