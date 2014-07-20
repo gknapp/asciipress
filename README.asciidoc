@@ -5,7 +5,7 @@ A static blog publish system using:
 * Asciidoc content files
 * Docbook and XSL templates to format into desired HTML
 
-. Dependencies
+=== Dependencies
 * Python 2.7+
 * `xsltproc`
 * `asciidoc`
