@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+
+try:
+    import os, sys
+
+    script_path = os.path.dirname(__file__)
+    sys.path.insert(0, os.path.join(script_path, "lib"))
+
+    from asciipress import args, file, command, asciidoc, xml
+except Exception as e:
+    print "Failed to import necessary libraries, Python 2.7+ required"
+    print e
+    exit(1)
+
+# ====================
+
+def get_xml_filepath(asc_file):
+    xml_path = os.path.join(os.path.realpath(script_path), "xml")
+    file.mkdir(xml_path)
+
+    fname, ext = os.path.splitext(os.path.basename(asc_file))
+    return os.path.join(xml_path, fname + ".xml")
+
+# ====================
+
+def only_asciidoc(fname):
+    name, ext = os.path.splitext(fname)
+    return ext == '.asc'
+
+def main(console, config):
+    script_path = os.path.dirname(os.path.realpath(__file__))
+    os.chdir(script_path)
+
+    source_path = os.path.realpath(os.path.join(script_path, config["ASCIIDOC_DIR"]))
+    html_path   = os.path.realpath(os.path.join(script_path, config["OUTPUT_DIR"]))
+
+    console.echo("Asciidoc files: " + source_path)
+    console.echo("HTML output:    " + html_path)
+
+    asciidocs = file.list(source_path, only_asciidoc)
+
+    # only process asciidocs newer than existing html file
+    for fname in asciidocs:
+        name, ext = os.path.splitext(fname)
+
+        asc_file  = os.path.join(source_path, fname)
+        xml_file  = get_xml_filepath(asc_file)
+        html_file = os.path.join(html_path, name + ".html")
+
+        try:
+            asciidoc.to_xml(asc_file, xml_file)
+            xml.convert_article(xml_file, html_file)
+            console.echo("Converted %s -> %s.html" % (fname, name))
+        except Exception as e:
+            console.echo(e)
+            exit(1)
+
+class Console:
+    """Print messages sent to console"""
+    def echo(self, message):
+        print message
+
+class SilentConsole:
+    """Suppress messages sent to console"""
+    def echo(self, message):
+        return True
+
+def load_config(args):
+    """Attempt to load config, otherwise return defaults"""
+    defaults = {
+        "xsl": {
+            "index": "index.xsl",
+            "article": "article.xsl",
+            "rss": "rss.xsl"
+        }
+    }
+    return dict(defaults.items() + args.__dict__.items())
+
+if __name__ == '__main__':
+    args = args.parse()
+    console = SilentConsole() if args.quiet else Console()
+    config = load_config(args)
+    main(console, config)
