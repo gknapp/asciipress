@@ -2,5 +2,5 @@
 
 from asciipress import command
 
-def convert(xmlfile):
+def convert(xml_file, html_file):
 	

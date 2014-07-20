@@ -9,6 +9,25 @@ except Exception as e:
     print e
     exit(1)
 
+# ====================
+
+def makedir(fpath):
+    if not os.path.isdir(fpath):
+        try:
+            os.mkdir(fpath, 0775)
+        except OSError as e:
+            raise OSError("Cannot create working directory: " + fpath)
+
+def get_xml_filepath(asc_file):
+    script_path = os.path.dirname(__file__)
+    xml_path    = os.path.join(script_path, "xml")
+    makedir(xml_path)
+
+    fname, ext = os.path.splitext(os.path.basename(asc_file))
+    return os.path.join(xml_path, fname + ".xml")
+
+# ====================
+
 def run_cmd(cmd, descript):
     try:
         command.run(cmd)
@@ -48,6 +67,7 @@ def main(console, config):
         name, ext = path.splitext(fname)
 
         asc_file  = path.join(source_path, fname)
+        xml_file  = get_xml_filepath(asc_file)
         html_file = path.join(html_path, name + ".html")
 
         try:
