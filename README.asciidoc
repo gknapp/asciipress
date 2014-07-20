@@ -3,13 +3,28 @@
 A static blog publish system using:
 
 * Asciidoc content files
-* Docbook and XSLT stylesheet transforms to HTML
+* Docbook and XSL templates to format into desired HTML
 
 .Dependencies
 
+* Python 2.7+
+* `xsltproc`
+* `asciidoc`
+
+Debian/Ubuntu based distributions:
 [source,bash]
 $ sudo apt-get install asciidoc xsltproc
 
+Mac OS X:
+* `xsltproc` ships with OS X (Mavericks at least).
+* The easiest way to install http://www.methods.co.nz/asciidoc[Asciidoc] is via http://brew.sh[Homebrew]
+
+[source,bash]
+$ sudo brew install autoconf automake libevent asciidoc
+
+.Design your blog
+Once you have your blog in HTML, convert it to XSL to drop in your Asciidoc content.
+
 .Generate
 [source,bash]
-$ ./publish
+$ ./asciipress ASCIIDOCS OUTPUT_DIR
