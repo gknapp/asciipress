@@ -17,11 +17,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>(serial failure)</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge;chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><xsl:value-of select="articleinfo/title" /></title>
     <link rel="stylesheet" type="text/css" href="css/reset.css" />
     <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="alternate"  type="application/rss+xml" href="feed.xml" title="RSS 2.0" />
   </head>
   <body>
     <header>

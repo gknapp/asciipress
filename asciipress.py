@@ -1,30 +1,30 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 try:
     import argparse
     from asciipress import command, xml
     from os import path, listdir, chdir, errno, mkdir
 except Exception as e:
-    print "Failed to import necessary libraries, Python 2.7+ required"
-    print e
+    print("Failed to import necessary libraries, Python 2.7+ required")
+    print(e)
     exit(1)
 
 # ====================
 
 def makedir(fpath):
-    if not os.path.isdir(fpath):
+    if not path.isdir(fpath):
         try:
-            os.mkdir(fpath, 0775)
+            mkdir(fpath, 0o775)
         except OSError as e:
             raise OSError("Cannot create working directory: " + fpath)
 
 def get_xml_filepath(asc_file):
-    script_path = os.path.dirname(__file__)
-    xml_path    = os.path.join(script_path, "xml")
+    script_path = path.dirname(__file__)
+    xml_path    = path.join(script_path, "xml")
     makedir(xml_path)
 
-    fname, ext = os.path.splitext(os.path.basename(asc_file))
-    return os.path.join(xml_path, fname + ".xml")
+    fname, ext = path.splitext(path.basename(asc_file))
+    return path.join(xml_path, fname + ".xml")
 
 # ====================
 
@@ -71,7 +71,8 @@ def main(console, config):
         html_file = path.join(html_path, name + ".html")
 
         try:
-            xml_file = xml.convert(asc_file)
+            exit()
+            xml_file = xml.convert(asc_file, xml_file)
             xml_to_html(script_path, xml_file, config["xsl"], html_file)
             console.echo("Converted %s -> %s.html" % (fname, name))
         except Exception as e:
@@ -93,7 +94,7 @@ def configure_args():
 class Console:
     """Print messages sent to console"""
     def echo(self, message):
-        print message
+        print(message)
 
 class SilentConsole:
     """Suppress messages sent to console"""
@@ -109,7 +110,10 @@ def load_config(args):
             "rss": "index_rss.xsl"
         }
     }
-    return dict(defaults.items() + args.__dict__.items())
+    args = vars(args)
+    config = defaults.copy()
+    config.update(args.items())
+    return config
 
 if __name__ == '__main__':
     args = configure_args()

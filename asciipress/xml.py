@@ -9,4 +9,4 @@ def convert(asc_file, xml_file):
         command.run(args)
         return xml_file
     except Exception as e:
-        print "Error converting Asciidoc to XML: " + e
+        print("Error converting Asciidoc to XML: " + e)
