@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+
+"""Convert asciidoc to HTML via XSL templates
+
+Usage: ./asciipress ASCIIDOC-DIR OUTPUT-DIR [-q | --quiet]
+
+Options:
+  -h --help   Show these instructions and exit
+  -q --quiet  Suppress console output
+  --version   Show version and exit
+
+"""
+
+def main(args):
+    cs = console.Silent() if args['--quiet'] else console.Print()
+    cs.echo('I am in main')
+    cfg = config.create(args)
+    print(cfg)
+    return 0
+
+if __name__ == '__main__':
+    import sys
+    sys.path.insert(1, sys.path[0] + '/lib')
+
+    from docopt import docopt
+    args = docopt(__doc__, version='1.0.0')
+
+    import console, config
+    retval = main(args)
+
+    if isinstance(retval, int):
+        sys.exit(retval)
