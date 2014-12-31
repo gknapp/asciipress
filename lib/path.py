@@ -1,5 +1,8 @@
 import os, sys, glob
 
+def exists(path):
+    return os.path.exists(path)
+
 def join(*args):
     return os.path.join(*args)
 
@@ -24,6 +27,10 @@ def list(dir, ext="*"):
 def fname(path):
     name = os.path.basename(path)
     return os.path.splitext(name)[0]
+
+def replace_fname(path, fname):
+    dir, file = os.path.split(path)
+    return os.path.join(dir, fname)
 
 def mtime(file):
     return os.path.getmtime(file)

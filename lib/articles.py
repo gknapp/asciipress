@@ -8,7 +8,7 @@ def process(console, config):
     htmlfiles = path.list(target_path, "html")
 
     pairs = match(asciidocs, htmlfiles)
-    regen = list(filter(html_older, pairs))
+    regen = list(filter(need_update, pairs))
 
     print(regen)
 
@@ -25,14 +25,21 @@ def match(ascs, htmls):
         for b in htmls:
             if filename_match(a, b):
                 pairs.append([a, b])
-        # if not_paired(a, pairs):
-        # add to list with html equiv
+        if a not in dict(pairs):
+            html = path.replace_fname(htmls[0], path.fname(a) + ".html")
+            pairs.append([a, html])
 
     return pairs
 
 def filename_match(a, b):
     return path.fname(a) == path.fname(b)
 
-def html_older(pair):
+'''
+filter function that includes asciidocs without a corresponding HTML file
+or has a more recent modify time than their HTML sibling
+'''
+def need_update(pair):
     asc, html = pair
+    if path.exists(html) is False:
+        return True
     return path.mtime(asc) > path.mtime(html)
