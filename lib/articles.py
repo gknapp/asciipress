@@ -8,7 +8,7 @@ def process(console, config):
     htmlfiles = path.list(target_path, "html")
 
     pairs = match(asciidocs, htmlfiles)
-    regen = list(filter(html_newer, pairs))
+    regen = list(filter(html_older, pairs))
 
     print(regen)
 
@@ -23,13 +23,16 @@ def match(ascs, htmls):
 
     for a in ascs:
         for b in htmls:
-            if fname_match(a, b):
+            if filename_match(a, b):
                 pairs.append([a, b])
+        # if not_paired(a, pairs):
+        # add to list with html equiv
+
     return pairs
 
-def fname_match(a, b):
+def filename_match(a, b):
     return path.fname(a) == path.fname(b)
 
-def html_newer(pair):
+def html_older(pair):
     asc, html = pair
     return path.mtime(asc) > path.mtime(html)
