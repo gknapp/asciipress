@@ -14,17 +14,25 @@ Options:
 def main(args):
     csol = console.Silent() if args['--quiet'] else console.Print()
     cfg  = config.create(args)
-    exitcode = articles.process(csol, cfg)
+    exitcode = process(csol, cfg)
     return exitcode
+
+def process(console, config):
+    files = articles.scan(config['ASCIIDOC-DIR'], config['OUTPUT-DIR'])
+    pub = publisher.Publisher(console)
+    summary = pub.to_html(files)
+
+    console.echo("Generated %s HTML files" % len(files))
+    # consolidate
+    # any work done = new index & rss file
 
 if __name__ == '__main__':
     import sys
     sys.path.insert(1, sys.path[0] + '/lib')
 
+    import console, config, articles, publisher
     from docopt import docopt
     args = docopt(__doc__, version='1.0.0')
-
-    import console, config, articles
     retval = main(args)
 
     if isinstance(retval, int):
