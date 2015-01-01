@@ -1,15 +1,20 @@
-== AsciiPress
+AsciiPress
+----------
 
 A static blog publish system using:
 
 * Asciidoc content files
 * Docbook and XSLT stylesheet transforms to HTML
+* Python (3+)
 
-.Dependencies
+Dependencies
+~~~~~~~~~~~~
+Debian / Ubuntu / Linux Mint:
+[source,bash]
+sudo apt-get install asciidoc xsltproc
+
+Usage
+~~~~~
 
 [source,bash]
-$ sudo apt-get install asciidoc xsltproc
-
-.Usage
-[source,bash]
-$ ./asciipress ASCIIDOC-DIR OUTPUT-DIR [-q | --quiet]
+asciipress ASCIIDOC-DIR OUTPUT-DIR [-q | --quiet]
