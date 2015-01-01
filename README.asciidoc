@@ -10,6 +10,6 @@ A static blog publish system using:
 [source,bash]
 $ sudo apt-get install asciidoc xsltproc
 
-.Generate
+.Usage
 [source,bash]
-$ ./publish
+$ ./asciipress ASCIIDOC-DIR OUTPUT-DIR [-q | --quiet]
