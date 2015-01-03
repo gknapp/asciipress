@@ -20,14 +20,21 @@ def main(args):
 def process(console, config):
     files = articles.scan(config['ASCIIDOC-DIR'], config['OUTPUT-DIR'])
     pub = publisher.Publisher(console)
-    summary = pub.to_html(files)
+    summary = pub.to_html(files, config['templates']['article'])
 
     console.echo("Generated %s HTML files" % len(files))
-    # consolidate
-    # any work done = new index & rss file
+
+    # if len(files):
+        # new index and rss file
 
 if __name__ == '__main__':
-    import sys
+    import shutil, sys
+    
+    for pkg in ['asciidoc', 'xsltproc']:
+        if shutil.which(pkg) is None:
+            print("Dependency not found. Please install " + pkg)
+            sys.exit(1)
+
     sys.path.insert(1, sys.path[0] + '/lib')
 
     import console, config, articles, publisher

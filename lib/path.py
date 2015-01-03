@@ -3,6 +3,9 @@ import os, sys, glob
 def exists(path):
     return os.path.exists(path)
 
+def dir(path):
+    return os.path.dirname(path)
+
 def join(*args):
     return os.path.join(*args)
 
