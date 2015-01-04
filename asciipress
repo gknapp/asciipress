@@ -20,12 +20,12 @@ def main(args):
 def process(console, config):
     files = articles.scan(config['ASCIIDOC-DIR'], config['OUTPUT-DIR'])
     pub = publisher.Publisher(console)
-    summary = pub.to_html(files, config['templates']['article'])
-
-    console.echo("Generated %s HTML files" % len(files))
+    summary = pub.to_html(files, config['stylesheet']['article'])
 
     # if len(files):
         # new index and rss file
+
+    return 0
 
 if __name__ == '__main__':
     import shutil, sys
