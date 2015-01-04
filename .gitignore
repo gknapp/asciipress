@@ -2,3 +2,4 @@ __pycache__/
 *.py[cod]
 xml
 venv/
+.DS_Store
