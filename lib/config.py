@@ -8,10 +8,7 @@ def create(args):
 
 def load(cfg_file):
     defaults = {
-        "asciipress": {
-            "tmp": "/var/tmp"
-        },
-        "templates": {
+        "stylesheet": {
             "article": "article.xsl",
             "index": "index.xsl",
             "rss": "rss.xsl"
